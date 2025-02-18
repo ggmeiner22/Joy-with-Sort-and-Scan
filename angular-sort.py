@@ -19,15 +19,69 @@ class Point:
     def get_y(self):
         return self.y
 
+    def compute_theta(self):
+        x = self.get_x()
+        y = self.get_y()
+
+        vector_magnitude = math.sqrt(x ** 2 + y ** 2)
+        if vector_magnitude == 0:
+            raise ValueError("Cannot calculate theta for point at origin (0, 0)")
+
+        cosine_theta  = x / vector_magnitude
+        degree = math.acos(cosine_theta)
+
+        # if in Quad 3 or 4
+        if y < 0:
+            degree = 2 * math.pi - degree
+
+        return degree
+
     def __le__(self, other):
-        """Compare points based on their angle from the positive x-axis using acos."""
-        norm_self = math.sqrt(self.x ** 2 + self.y ** 2)
-        norm_other = math.sqrt(other.x ** 2 + other.y ** 2)
-        angle_self = math.acos(self.x / norm_self) if norm_self != 0 else 0
-        angle_other = math.acos(other.x / norm_other) if norm_other != 0 else 0
-        return angle_self <= angle_other
+        return self.compute_theta() < other.compute_theta() or\
+            self.compute_theta() == other.compute_theta()
+
+    def __lt__(self, other):
+        return self.compute_theta() < other.compute_theta()
+
+    def __gt__(self, other):
+        return self.compute_theta() > other.compute_theta()
+
+    def __ge__(self, other):
+        return self.compute_theta() > other.compute_theta() or\
+            self.compute_theta() == other.compute_theta()
+
+    def __eq__(self, other):
+        return self.compute_theta() == other.compute_theta()
+
 
 def timsort(points):
+    """
+    Performs TimSort on the given array of points.
+    TimSort is a hybrid sorting algorithm derived from Merge Sort and Insertion Sort.
+    It sorts small chunks using Insertion Sort and then merges them using a stack-based merging strategy.
+    """
+    stack = []
+    total_runs = 0
+    total_merges = 0
+    arr_len = len(points)  # Length of points
+    min_run = 3
+    print("scanning phase:")
+
+    index = 0
+    while index < arr_len:
+
+
+def insertion_sort(points, left, right):
+    """Sorts a subarray using insertion sort"""
+    print("before", points)
+    for i in range(left + 1, right + 1):
+        current_value = points[i]
+        j = i - 1
+        while j >= left and points[j] > current_value:
+            points[j + 1] = points[j]
+            j -= 1
+        points[j + 1] = current_value
+    print("after", points)
 
 
 def main():
@@ -38,6 +92,7 @@ def main():
     # Creates a list of the points
     points = [Point(*map(float, line.split())) for line in data[1:num_of_points + 1]]
 
-    timsort(points) #begin timsort
+    timsort(points)  # begin timsort
+
 
 main()
